@@ -1,40 +1,48 @@
-import { useEffect } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./App.css";
+import Home from "./screens/Home";
+import Login from "./screens/Login";
+import Lists from "./screens/Lists";
+import Study from "./screens/Study";
+import { ProtectedRoute } from "./context/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 
-const synth = window.speechSynthesis;
-let voices: SpeechSynthesisVoice[] = [];
-function loadVoices() {
-    voices = synth.getVoices();
-    for (let i = 0; i < voices.length; i++) {
-        console.log(i, voices[i].name, voices[i].lang);
-    }
-}
+const BrowserRouter = createBrowserRouter([
+    {
+        path: "/",
+        element: (
+            <ProtectedRoute>
+                <Home />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "login",
+        element: <Login />,
+    },
+    {
+        path: "study",
+        element: (
+            <ProtectedRoute>
+                <Study />
+            </ProtectedRoute>
+        ),
+    },
+    {
+        path: "lists",
+        element: (
+            <ProtectedRoute>
+                <Lists />
+            </ProtectedRoute>
+        ),
+    },
+]);
 
 function App() {
-    useEffect(() => {
-        if ("onvoiceschanged" in synth) {
-            synth.onvoiceschanged = loadVoices;
-        } else {
-            loadVoices();
-        }
-    }, []);
-
     return (
-        <>
-            <h1>Hello, world</h1>
-            <button
-                onClick={(e) => {
-                    e.preventDefault();
-                    const utterThis = new SpeechSynthesisUtterance(
-                        "Speak. I want to speak with you about your memory. Speak."
-                    );
-                    utterThis.voice = voices[0];
-                    synth.speak(utterThis);
-                }}
-            >
-                Speak, Memory!
-            </button>
-        </>
+        <AuthProvider>
+            <RouterProvider router={BrowserRouter} />
+        </AuthProvider>
     );
 }
 
