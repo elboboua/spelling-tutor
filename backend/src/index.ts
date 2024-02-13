@@ -10,12 +10,19 @@ import { authz } from "./middleware/authz.middleware";
 import requestId from "./middleware/request-id";
 import morgan from "morgan";
 import { attachLoggerToRequest, logger } from "./middleware/logging.middleware";
+import cors, { CorsOptions } from "cors";
 
 const app = express();
 const PORT = 8080;
+const corsOptions: CorsOptions = {
+    origin: process.env.FRONTEND_URL,
+    optionsSuccessStatus: 200,
+};
 
+app.use;
 app.use(express.json());
 app.use(requestId);
+app.use(cors(corsOptions));
 app.use(
     morgan(":id :method :url :response-time", {
         stream: {

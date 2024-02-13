@@ -16,7 +16,7 @@ morgan.token("id", function getId(req: Request) {
     return req.request_id;
 });
 
-export const attachLoggerToRequest: RequestHandler = (req, _, next) => {
+export const attachLoggerToRequest: RequestHandler = (req, res, next) => {
     req.logger = logger;
     next();
 };

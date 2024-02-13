@@ -30,16 +30,7 @@ export const authz: RequestHandler = async (req, res, next) => {
             return res.status(401).json({ error: "Unauthorized" });
         }
 
-        const user = await prisma.user.findUnique({
-            where: { id: payload.userId },
-            select: { id: true },
-        });
-
-        if (!user) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-
-        req.user_id = user.id;
+        req.user_id = payload.userId!;
         next();
     } catch (error) {
         res.status(401).json({ error: "Unauthorized" });

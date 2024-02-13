@@ -1,10 +1,9 @@
 import { createContext, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { apiClient } from "../clients/apiClient";
 
 // Auth Context has email, name, and token
 export const AuthContext = createContext<AuthContextProps>({
     email: "",
-    name: "",
     token: "",
     login: () => {},
     logout: () => {},
@@ -13,9 +12,8 @@ export const AuthContext = createContext<AuthContextProps>({
 // Auth Context Props
 export interface AuthContextProps {
     email: string;
-    name: string;
     token: string;
-    login: (email: string, password: string, cb: () => void) => void;
+    login: (email: string, password: string) => void;
     logout: () => void;
 }
 
@@ -25,25 +23,29 @@ export interface AuthProviderProps {
 }
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
     const [token, setToken] = useState("");
 
-    const login = (email: string, password: string, cb: () => void) => {
-        // Call the login API
-        // Set the email, name, and token
-        password;
-        setEmail(email);
-        setName("John Doe");
-        setToken("12345");
-        // cb();
+    const login = async (email: string, password: string) => {
+        try {
+            const res = await apiClient.post("auth/login", { email, password });
+            setToken(res.data.jwt);
+            setEmail(email);
+            apiClient.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${res.data.jwt}`;
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const logout = () => {
-        // Clear the email, name, and token
+        setEmail("");
+        setToken("");
+        delete apiClient.defaults.headers.common["Authorization"];
     };
 
     return (
-        <AuthContext.Provider value={{ email, name, token, login, logout }}>
+        <AuthContext.Provider value={{ email, token, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

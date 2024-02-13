@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Home() {
+    const { logout } = useAuth();
     return (
         <div>
             <Link
@@ -14,6 +16,7 @@ function Home() {
             >
                 Study!
             </Link>
+            <button onClick={logout}>Log out</button>
         </div>
     );
 }
